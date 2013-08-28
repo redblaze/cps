@@ -84,6 +84,9 @@ var alienAdd = function(a, b, cb) {
 };
 
 var asyncFib = function(n, cb) {
+    if (n < 0) {
+        throw new Error('fib input error');
+    }
     if (n == 0) {return cb(null, 1);}
     if (n == 1) {return cb(null, 1);}
 
@@ -173,3 +176,36 @@ cps.seq([
 ], cb);
 ```
 
+<a name="rescue"/>
+### rescue(try_clause_procedure, catch_clause_procedure, callback)
+
+__Example__
+
+What if there's some invalid input?  Let's catch it without disturbing the overall flow.
+
+```javascript
+cps.seq([
+    function(_, cb) {
+        cps.pmap(
+            [1,2,3,4,5,6,7,8,9,10, -1],
+            function(el, cb) {
+                cps.rescue(
+                    function(cb) { // try clause
+                        asyncFib(el, cb);
+                    },
+                    function(err, cb) { // catch clause
+                        console.log(err);
+                        cb(null, -1);
+                    },
+                    cb
+                );
+            },
+            cb
+        );
+    },
+    function(res, cb) {
+        console.log(res);
+        cb();
+    }
+], cb);
+```

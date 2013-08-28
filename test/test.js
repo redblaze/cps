@@ -19,6 +19,7 @@ var cb = function(err, res) {
         } else {
             console.log(res);
         }
+        console.log('finished');
     } catch(e) {
         handleError(e);
     }
@@ -91,6 +92,7 @@ var asyncFib = function(n, cb) {
  );
  */
 
+/*
 cps.seq([
     function(_, cb) {
         cps.pmap(
@@ -115,3 +117,19 @@ cps.seq([
         cb();
     }
 ], cb);
+*/
+
+cps.rescue(
+    function(cb) {
+        setTimeout(function() {
+            cb(new Error('foobar'));
+        }, 0);
+    },
+
+    function(err, cb) {
+        throw err;
+        cb(null, 'ok');
+    },
+
+    cb
+);
