@@ -4,16 +4,16 @@ A CPS library to help the coding of the asynced programs in Javascript/Node.js
 
 ## Supported APIs
 
-seq
+* [seq](#seq)
 
-peach
+* [peach](#peach)
 
-pwhile
+* [pwhile](#pwhile)
 
-pmap
+* [pmap](#pmap)
 
-compose
+* [compose](#compose)
 
-rescue
+# [rescue](#rescue)
 
-parallel
+# [parallel](#parallel)
