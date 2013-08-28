@@ -1,7 +1,24 @@
 
 # cps
 
-A CPS library to help the coding of the asynced programs in Javascript/Node.js
+A CPS (Continuation Passing Style) library to ease the
+event-driven/asynchronized coding style in node.js.  There seems to be
+enough node.js libs (e.g. async) doing the same thing, why yet
+another?  This lib is notably different in two aspects:
+
+* Exception handling.  Using cps, "throw" statements will be
+  transformed to callback error cases directly.  Furthermore, a
+  "rescue" function is defined to catch exceptions pass by the callbacks.
+
+* Nested callback passing flattening.  The "seq" function defined in
+  cps is more powerful than "series" as defined in async.  "seq" not
+  only runs the list of procedures sequentially, but also chain the
+  result of a procedure into the next procedure in the listed order.
+  This, in practice, can be used to greatly reduce the level of nested
+  callback functions with a relatively more succinct syntax
+
+
+
 
 ## Install
 
@@ -21,7 +38,10 @@ function(err, res) {
 }
 ```
 
-A callback is a function that takes two arguments, "err" and "res".  Semantically, a non-null "err" corresponds to a program exception; while a null "err" corresponds to normal return without any exceptions.
+A callback is a function that takes two arguments, "err" and "res".
+Semantically, a non-null "err" corresponds to a program exception;
+while a null "err" corresponds to normal return without any
+exceptions.
 
 ### Procedure
 
@@ -32,7 +52,12 @@ function(arg1, arg2, ..., callback) {
   // do some work with the arguments and then invoke the callback to continue
 }
 ```
-A procedure is a function that takes a callback as the last argument.  Semantically, a procedure does some work with the input arguments and at some point, call the callback to continue.  Note that a call to the "callback" argument MUST always be a tail call.  In particular, the following is a procedure:
+
+A procedure is a function that takes a callback as the last argument.
+Semantically, a procedure does some work with the input arguments and
+at some point, call the callback to continue.  Note that a call to the
+"callback" argument MUST always be a tail call.  In particular, the
+following is a procedure:
 
 ```javascript
 function(callback) {
@@ -53,7 +78,8 @@ function(callback) {
 <a name="seq"/>
 ### seq(array_of_procedures, callback)
 
-Sequence a list of procedures.  Note that the result of each procedure is fed into the next procedure in the listed order.
+Sequence a list of procedures.  Note that the result of each procedure
+is fed into the next procedure in the listed order.
 
 __Example__
 
@@ -84,7 +110,9 @@ An asynchronized version of while loop.
 
 __Example__
 
-Consider a world in which arithmatic operations do not exists and must be accomplished through alien technology.  Then the Fibonacci function needs to be written in the following way:
+Consider a world in which arithmatic operations do not exists and must
+be accomplished through alien technology.  Then the Fibonacci function
+needs to be written in the following way:
 
 ```javascript
 var alienAdd = function(a, b, cb) {
