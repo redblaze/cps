@@ -3,7 +3,7 @@
     "description": "A continuation passing style library to help the coding of asynced programs in Javascript/Node.js.",
     "main": "./lib/cps",
     "author": "Chiyan Chen",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "repository" : {
         "type" : "git",
         "url" : "https://github.com/redblaze/cps.git"

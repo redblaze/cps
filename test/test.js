@@ -92,7 +92,7 @@ cps.peach(
 );
 */
 
-
+/*
 cps.seq([
     function(_, cb) {
         cps.pmap(
@@ -121,17 +121,37 @@ cps.seq([
         cb();
     }
 ], cb);
-
-/*
-cps.rescue({
-    'try': function(cb) {
-        setTimeout(function() {
-            cb(new Error('foobar'));
-        }, 0);
-    },
-    'catch': function(err, cb) {
-        throw err;
-        cb(null, 'ok');
-    }
-}, cb);
 */
+
+var rescueTest = function(cb) {
+    cps.rescue({
+        'try': function(cb) {
+            setTimeout(function() {
+                cb(new Error('foobar'));
+            }, 0);
+        },
+        'catch': function(err, cb) {
+            throw err;
+            cb(null, 'ok');
+        }
+    }, cb);
+};
+
+var parallelTest = function(cb) {
+    cps.parallel([
+        function(cb) {
+            setTimeout(function() {
+                console.log('1');
+                cb();
+            }, 2000);
+        },
+        function(cb) {
+            setTimeout(function() {
+                console.log('2');
+                cb();
+            }, 1000);
+        }
+    ], cb);
+};
+
+parallelTest(cb);
