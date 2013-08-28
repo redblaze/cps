@@ -233,16 +233,19 @@ cps.seq([
         cps.pmap(
             [1,2,3,4,5,6,7,8,9,10, -1],
             function(el, cb) {
-                cps.rescue(
-                    function(cb) { // try clause
+                cps.rescue({
+                    'try': function(cb) { // try clause
                         asyncFib(el, cb);
                     },
-                    function(err, cb) { // catch clause
+                    'catch': function(err, cb) { // catch clause
                         console.log(err);
                         cb(null, -1);
                     },
-                    cb
-                );
+                    'finally': function(cb) { // finally
+                        console.log("always print this whether it's good or bad.");
+                        cb(); 
+                    }
+                }, cb);
             },
             cb
         );

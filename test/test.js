@@ -74,40 +74,44 @@ var asyncFib = function(n, cb) {
 };
 
 /*
- cps.peach(
- [1,2,3,4,5,6,7,8,9,10],
- function(el, cb) {
- cps.seq([
- function(_, cb) {
- asyncFib(el, cb);
- },
- function(res, cb) {
- console.log(res);
- cb();
- }
- ], cb);
+cps.peach(
+    [1,2,3,4,5,6,7,8,9,10],
+    function(el, cb) {
+        cps.seq([
+            function(_, cb) {
+                asyncFib(el, cb);
+            },
+            function(res, cb) {
+                console.log(res);
+                cb();
+            }
+        ], cb);
 
- },
- cb
- );
- */
+    },
+    cb
+);
+*/
 
-/*
+
 cps.seq([
     function(_, cb) {
         cps.pmap(
-            [-1,1,2,3,4,5,6,7,8,9,10],
+            [1,2,3,4,5,6,7,8,9,10,-2],
             function(el, cb) {
-                cps.rescue(
-                    function(cb) {
+                cps.rescue({
+                    'try': function(cb) {
                         asyncFib(el, cb);
                     },
-                    function(err, cb) {
+                    'catch': function(err, cb) {
                         console.log(err);
                         cb(null, -1);
                     },
-                    cb
-                );
+                    'finally': function(cb) {
+                        // console.log('finally');
+                        throw new Error('finally');
+                        cb();
+                    }
+                }, cb)
             },
             cb
         );
@@ -117,19 +121,17 @@ cps.seq([
         cb();
     }
 ], cb);
-*/
 
-cps.rescue(
-    function(cb) {
+/*
+cps.rescue({
+    'try': function(cb) {
         setTimeout(function() {
             cb(new Error('foobar'));
         }, 0);
     },
-
-    function(err, cb) {
+    'catch': function(err, cb) {
         throw err;
         cb(null, 'ok');
-    },
-
-    cb
-);
+    }
+}, cb);
+*/
