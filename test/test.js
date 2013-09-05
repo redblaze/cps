@@ -141,14 +141,20 @@ var parallelTest = function(cb) {
     cps.parallel([
         function(cb) {
             setTimeout(function() {
+                console.log('3');
+                cb(new Error('kaz'));
+            }, 3000);
+        },
+        function(cb) {
+            setTimeout(function() {
                 console.log('1');
-                cb();
+                cb(null, 'ok');
             }, 2000);
         },
         function(cb) {
             setTimeout(function() {
                 console.log('2');
-                cb();
+                cb(new Error('foobar'));
             }, 1000);
         }
     ], cb);

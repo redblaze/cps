@@ -4,19 +4,16 @@
 A CPS (Continuation Passing Style) library to ease the
 event-driven/asynchronized coding style in node.js.  There seems to be
 enough node.js libs (e.g. async) doing the same thing, why yet
-another?  This lib is notably different in two aspects:
+another?  This lib is notably different from other libs in
+exception handling.  Using cps:
 
-* Exception handling.  Using cps, "throw" statements will be
-  transformed to callback error cases directly.  Furthermore, a
-  "rescue" function is defined to catch exceptions pass by the callbacks.
+* Any "throw" statements in the procedures will be transformed to an
+  application of the callback onto the error object.
+* A "rescue" function is provided, which can be used to catch such
+  exceptions pass through the callbacks.
 
-* Nested callback passing flattening.  The "seq" function defined in
-  cps is more powerful than "series" as defined in async.  "seq" not
-  only runs the list of procedures sequentially, but also chain the
-  result of a procedure into the next procedure in the listed order.
-  This, in practice, can be used to greatly reduce the level of nested
-  callback functions with a relatively more succinct syntax
-
+This consistently recovers the try/catch functionality in continuation
+passing style programming.
 
 
 
@@ -260,29 +257,63 @@ cps.seq([
 <a name="parallel"/>
 ### parallel(array_of_procedures, callback)
 
-Parallel a list of procedures.  Parallel fails if any of the parellel
-track fails.  If you do not want this behavior, use [rescue](#rescue)
-to prevent a procedure from failing.
+Parallel a list of procedures.  The top level callback is only called
+after each parallel procedure finishes, regardless the procedure
+succeeds or fails.  The callback will never take a non-null error
+parameter; the result parameter is an array of the following form:
+
+```js
+[
+   {"status": "ok", "data": res},  /* in case the procedure in the 
+                                      corresponding position succeeds 
+                                      with result res
+                                   */
+   {"status": "error", "error": err}  /* in case the procedure in the 
+                                         corresponding position fails 
+                                         with error err
+                                      */
+   // ...
+]
+```
+
 
 __Example__
 
 See "thread b" being printed out before "thread a":
 
 ```javascript
-cps.parallel([
-    function(cb) {
-        setTimeout(function() {
-            console.log('thread a');
-            cb();
-        }, 2000);
-    },
+var parallelTest = function(cb) {
+    cps.parallel([
+        function(cb) {
+            setTimeout(function() {
+                console.log('3');
+                cb(new Error('kaz'));
+            }, 3000);
+        },
+        function(cb) {
+            setTimeout(function() {
+                console.log('1');
+                cb(null, 'ok');
+            }, 2000);
+        },
+        function(cb) {
+            setTimeout(function() {
+                console.log('2');
+                cb(new Error('foobar'));
+            }, 1000);
+        }
+    ], cb);
+};
+```
 
-    function(cb) {
-        setTimeout(function() {
-            console.log('thread b');
-            cb();
-        }, 1000);
-    }
-], cb);
+Running this procedure will yield the following output:
+
+```text
+2
+1
+3
+[ { status: 'error', error: [Error: kaz] },
+  { status: 'ok', data: 'ok' },
+  { status: 'error', error: [Error: foobar] } ]
 ```
 
