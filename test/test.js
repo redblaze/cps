@@ -160,4 +160,16 @@ var parallelTest = function(cb) {
     ], cb);
 };
 
-parallelTest(cb);
+var callbackTest = function(cb) {
+    cps.seq([
+        function(_, cb) {
+            setTimeout(function() {
+                cb(null, 'after timeout');
+            }, 1000);
+
+            cb(null, 'right now');
+        }
+    ], cb);
+};
+
+callbackTest(cb);
