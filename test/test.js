@@ -172,4 +172,24 @@ var callbackTest = function(cb) {
     ], cb);
 };
 
-callbackTest(cb);
+var pforTest = function(cb) {
+    var sum = 0;
+    cps.seq([
+        function(_, cb) {
+            console.log('here');
+            cps.pfor(10, function(i, cb) {
+                setTimeout(function() {
+                    sum += i;
+                    console.log(sum);
+                    cb();
+                }, 1000);
+            }, cb);
+        },
+        function(_, cb) {
+            console.log(sum);
+            cb(null, 'ok');
+        }
+    ], cb);
+};
+
+pforTest(cb);

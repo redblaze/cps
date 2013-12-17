@@ -69,6 +69,7 @@ function(callback) {
 * [pwhile](#pwhile)
 * [peach](#peach)
 * [pmap](#pmap)
+* [pfor](#pfor)
 * [rescue](#rescue)
 * [parallel](#parallel)
 
@@ -211,6 +212,34 @@ cps.seq([
     function(res, cb) {
         console.log(res);
         cb();
+    }
+], cb);
+```
+
+<a name="pfor" />
+### pfor(number_of_iterations, procedure_for_each_index, callback)
+
+Apply a procedure on a sequence of consecutive indices, starting of 0.
+
+__Example__
+
+
+```javascript
+var sum = 0;
+cps.seq([
+    function(_, cb) {
+        console.log('here');
+        cps.pfor(10, function(i, cb) {
+            setTimeout(function() {
+                sum += i;
+                console.log(sum);
+                cb();
+            }, 1000);
+        }, cb);
+    },
+    function(_, cb) {
+        console.log(sum);
+        cb(null, 'ok');
     }
 ], cb);
 ```
